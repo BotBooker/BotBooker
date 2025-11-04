@@ -2,9 +2,12 @@ package otel
 
 import (
 	"context"
+	"fmt"
 
 	"go.opentelemetry.io/otel/trace"
 )
+
+var LogHook func(string, ...interface{})
 
 func GetTraceInfo(ctx context.Context) (traceID string, spanID string, isSampled bool) {
 	spanCtx := trace.SpanContextFromContext(ctx)
@@ -17,6 +20,12 @@ func GetTraceInfo(ctx context.Context) (traceID string, spanID string, isSampled
 	}
 
 	isSampled = spanCtx.IsSampled()
+
+	if LogHook != nil {
+		LogHook("traceID: %v; spanID: %v; isSampled: %v", traceID, spanID, isSampled)
+	} else {
+		fmt.Printf("traceID: %v; spanID: %v; isSampled: %v\n", traceID, spanID, isSampled)
+	}
 
 	return traceID, spanID, isSampled
 }
