@@ -10,8 +10,8 @@ import (
 	"go.opentelemetry.io/otel"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 
-	"github.com/rupreht/botbooker/internal/health"
-	observability "github.com/rupreht/botbooker/internal/observability/otel"
+	"github.com/botbooker/botbooker/internal/health"
+	observability "github.com/botbooker/botbooker/internal/observability/otel"
 )
 
 var applicationName string = "botbooker-api"
@@ -37,5 +37,7 @@ func main() {
 
 	// Start server on port 8080 (default)
 	// Server will listen on 0.0.0.0:8080 (localhost:8080 on Windows)
-	api.Run()
+	if err := api.Run(); err != nil {
+		fmt.Printf("cannot start API server: %s", err)
+	}
 }

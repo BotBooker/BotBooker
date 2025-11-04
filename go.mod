@@ -1,4 +1,4 @@
-module github.com/rupreht/botbooker
+module github.com/botbooker/botbooker
 
 go 1.25
 
