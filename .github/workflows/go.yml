@@ -65,7 +65,7 @@ jobs:
             ${{ runner.os }}-go-
       - name: Run Tests
         run: |
-          go test ./cmd/... -v -covermode=atomic -coverprofile=coverage.out
+          GO111MODULE=off go test ./cmd/... -v -covermode=atomic -coverprofile=coverage.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
