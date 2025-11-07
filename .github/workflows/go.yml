@@ -67,6 +67,7 @@ jobs:
         run: |
           set -x
           sed -i 's/go 1.25/go ${{ matrix.go }}/g' go.mod
+          go mod tidy
           go test ./cmd/... -v -covermode=atomic -coverprofile=coverage.out
 
       - name: Upload coverage to Codecov
