@@ -1,3 +1,9 @@
+// Package main реализует HTTP‑сервер API для сервиса бронирования botbooker.
+//
+// Функционал:
+//   - обработка REST‑запросов;
+//   - интеграция с базой данных;
+//   - аутентификация пользователей.
 package main
 
 import (
@@ -14,7 +20,7 @@ import (
 	observability "github.com/botbooker/botbooker/internal/observability/otel"
 )
 
-var applicationName string = "botbooker-api"
+var applicationName = "botbooker-api"
 
 func main() {
 	otel.SetTracerProvider(sdktrace.NewTracerProvider(sdktrace.WithSampler(sdktrace.ParentBased(sdktrace.AlwaysSample()))))
@@ -33,7 +39,7 @@ func main() {
 		})
 	})
 
-	api.GET("/health", health.HealthHandler)
+	api.GET("/health", health.Handler)
 
 	// Start server on port 8080 (default)
 	// Server will listen on 0.0.0.0:8080 (localhost:8080 on Windows)

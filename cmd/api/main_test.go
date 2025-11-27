@@ -9,10 +9,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/botbooker/botbooker/internal/health"
-	observability "github.com/botbooker/botbooker/internal/observability/otel"
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+
+	"github.com/botbooker/botbooker/internal/health"
+	observability "github.com/botbooker/botbooker/internal/observability/otel"
 )
 
 func TestPingEndpoint(t *testing.T) {
@@ -102,7 +103,7 @@ func setupRouter() *gin.Engine {
 		})
 	})
 
-	api.GET("/health", health.HealthHandler)
+	api.GET("/health", health.Handler)
 
 	return api
 }
@@ -111,7 +112,7 @@ func TestPingLogsTraceInfo(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	var logOutput strings.Builder
-	observability.LogHook = func(format string, a ...interface{}) {
+	observability.LogHook = func(format string, a ...any) {
 		logOutput.WriteString(fmt.Sprintf(format, a...))
 	}
 
