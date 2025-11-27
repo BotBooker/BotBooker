@@ -12,9 +12,9 @@ trim_trailing_whitespace = true
 
 # Настройки для Go-файлов
 [*.go]
-indent_style = tab
+indent_style = space
 indent_size = 4
-tab_width = 4
+max_line_length = 100
 
 # Настройки для конфигурационных и текстовых файлов
 [*.{yml,yaml,json,xml,toml,ini,cfg,conf}]

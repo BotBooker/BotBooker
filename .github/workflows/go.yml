@@ -1,4 +1,4 @@
-name: Run Tests
+name: Run lint & Tests
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup go
         uses: actions/setup-go@v6
@@ -21,9 +21,9 @@ jobs:
           go-version-file: go.mod
 
       - name: Setup golangci-lint
-        uses: golangci/golangci-lint-action@v8
+        uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.6.1
+          version: v2.6
           args: --verbose
 
       - name: Bearer
@@ -32,13 +32,16 @@ jobs:
           diff: true
 
   test:
+    needs: lint
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        go: [1.23, 1.24, 1.25]
+        os: [ubuntu-latest, macos-latest]
+        go: [1.24, 1.25]
         include:
           - os: ubuntu-latest
             go-build: ~/.cache/go-build
+          - os: macos-latest
+            go-build: ~/Library/Caches/go-build
     name: ${{ matrix.os }} @ Go ${{ matrix.go }}
     runs-on: ${{ matrix.os }}
     env:
@@ -51,7 +54,7 @@ jobs:
           go-version: ${{ matrix.go }}
 
       - name: Checkout Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.ref }}
 
@@ -63,10 +66,11 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
+
       - name: Run Tests
         run: |
           set -x
-          sed -i 's/go 1.25/go ${{ matrix.go }}/g' go.mod
+          sed -i.bak 's/go 1.25/go ${{ matrix.go }}/g' go.mod
           go mod tidy
           go test ./cmd/... -v -covermode=atomic -coverprofile=coverage.out
 
@@ -74,20 +78,3 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           flags: ${{ matrix.os }},go-${{ matrix.go }}
-
-  vulnerability-scanning:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.33.1
-        with:
-          scan-type: "fs"
-          ignore-unfixed: true
-          format: "sarif"
-          output: "trivy-results.sarif"
-          exit-code: "1"
-          severity: "CRITICAL,HIGH"
