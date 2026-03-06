@@ -23,6 +23,7 @@ test: gotestfmt
 	@echo "Running tests with coverage report..."
 	@set -euo pipefail
 	@$(GO) test -json -v -shuffle=on -timeout=5m -count=1 -tags cmd ./cmd/... -coverprofile=coverage.out -covermode=atomic 2>&1 | tee ./gotest-e2e.log | gotestfmt
+	@$(GO) test -json -v -shuffle=on -timeout=5m -count=1 -tags internal ./internal/... -coverprofile=coverage.out -covermode=atomic 2>&1 | tee ./gotest-e2e.log | gotestfmt
 
 .PHONY: fmt
 fmt: ## Ensure consistent code formatting.

@@ -16,6 +16,24 @@ import (
 	observability "github.com/botbooker/botbooker/internal/observability/otel"
 )
 
+func setupRouter() *gin.Engine {
+	api := gin.Default()
+	api.ContextWithFallback = true
+	api.Use(otelgin.Middleware(applicationName))
+
+	api.GET("/ping", func(ctx *gin.Context) {
+		traceID, spanID, isSampled := observability.GetTraceInfo(ctx)
+		fmt.Printf("traceID: %v; spanID: %v; isSampled: %v\n", traceID, spanID, isSampled)
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "pong",
+		})
+	})
+
+	api.GET("/health", health.Handler)
+
+	return api
+}
+
 func TestPingEndpoint(t *testing.T) {
 	// Отключаем логи Gin в тестах
 	gin.SetMode(gin.TestMode)
@@ -88,24 +106,6 @@ func TestHealthEndpoint(t *testing.T) {
 	if w.Body.Len() == 0 {
 		t.Error("Ответ /health пуст")
 	}
-}
-
-func setupRouter() *gin.Engine {
-	api := gin.Default()
-	api.ContextWithFallback = true
-	api.Use(otelgin.Middleware(applicationName))
-
-	api.GET("/ping", func(ctx *gin.Context) {
-		traceID, spanID, isSampled := observability.GetTraceInfo(ctx)
-		fmt.Printf("traceID: %v; spanID: %v; isSampled: %v\n", traceID, spanID, isSampled)
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-
-	api.GET("/health", health.Handler)
-
-	return api
 }
 
 func TestPingLogsTraceInfo(t *testing.T) {
