@@ -42,6 +42,13 @@ vet: ## Examine packages and report suspicious constructs if any.
 
 .PHONY: lint
 lint: ## Inspect source code for stylistic errors or potential bugs.
+	@if ! command -v golangci-lint >/dev/null 2>&1; then \
+		echo "Installing golangci-lint..."; \
+		$(GO) install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2; \
+		if command -v goenv >/dev/null 2>&1; then \
+			goenv rehash; \
+		fi \
+	fi
 	@golangci-lint run --fix
 
 .PHONY: misspell
@@ -54,7 +61,6 @@ misspell-check: ## misspell (check only).
 
 .PHONY: tools
 tools: ## Install Go tools (including misspell).
-	@$(GO) install golang.org/x/lint/golint@latest
 	@$(GO) install github.com/client9/misspell/cmd/misspell@latest
 	@if command -v goenv >/dev/null 2>&1; then \
 		goenv rehash; \
