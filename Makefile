@@ -21,8 +21,7 @@ help: ## Show this help message
 test: ## Run tests to verify code functionality.
 test: gotestfmt
 	@echo "Running tests with coverage report..."
-	@set -eu
-	@$(GO) test -json -shuffle=on -timeout=5m -count=1 $(TESTTAGS) $(TESTFOLDER) -coverprofile=coverage.out -covermode=atomic 2>&1 | tee ./gotest-e2e.log | gotestfmt
+	@set -eu;$(GO) test -json -shuffle=on -timeout=5m -count=1 $(TESTTAGS) $(TESTFOLDER) -coverprofile=coverage.out -covermode=atomic 2>&1 | tee ./gotest-e2e.log | gotestfmt
 
 .PHONY: fmt
 fmt: ## Ensure consistent code formatting.
