@@ -53,7 +53,7 @@ misspell-check: ## misspell (check only).
 	misspell -error $(GOFILES)
 
 .PHONY: tools
-tools: ## Install tools (golint and misspell).
+tools: ## Install Go tools (including misspell).
 	@$(GO) install golang.org/x/lint/golint@latest
 	@$(GO) install github.com/client9/misspell/cmd/misspell@latest
 	@if command -v goenv >/dev/null 2>&1; then \
