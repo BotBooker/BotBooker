@@ -54,13 +54,8 @@ misspell-check: ## misspell (check only).
 
 .PHONY: tools
 tools: ## Install tools (golint and misspell).
-	@if [ $(GO_VERSION) -gt 15 ]; then \
-		$(GO) install golang.org/x/lint/golint@latest; \
-		$(GO) install github.com/client9/misspell/cmd/misspell@latest; \
-	elif [ $(GO_VERSION) -lt 16 ]; then \
-		$(GO) install golang.org/x/lint/golint; \
-		$(GO) install github.com/client9/misspell/cmd/misspell; \
-	fi
+	@$(GO) install golang.org/x/lint/golint@latest
+	@$(GO) install github.com/client9/misspell/cmd/misspell@latest
 	@if command -v goenv >/dev/null 2>&1; then \
 		goenv rehash; \
 	fi
