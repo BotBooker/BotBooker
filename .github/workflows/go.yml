@@ -62,7 +62,7 @@ jobs:
         with:
           path: |
             ${{ matrix.go-build }}
-            ~/go/pkg/mod
+            .
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
