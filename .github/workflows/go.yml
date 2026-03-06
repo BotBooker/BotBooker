@@ -72,7 +72,7 @@ jobs:
           set -x
           sed -i.bak 's/go 1.25/go ${{ matrix.go }}/g' go.mod
           go mod tidy
-          go test ./cmd/... -v -covermode=atomic -coverprofile=coverage.out
+          go test -failfast $(find . -name "*_test.go" -type f -exec dirname {} +) -v -covermode=atomic -coverprofile=coverage.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
