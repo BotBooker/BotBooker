@@ -5,7 +5,7 @@ PACKAGES ?= $(shell $(GO) list ./...)
 VETPACKAGES ?= $(shell $(GO) list ./... | grep -v /examples/)
 GOFILES := $(shell find . -name "*.go")
 TESTFOLDER := $(shell find . -name "*_test.go" -type f -exec dirname {} +)
-TESTTAGS ?= ""
+TESTTAGS ?= "-v"
 
 .DEFAULT_GOAL := help
 
@@ -21,8 +21,8 @@ help: ## Show this help message
 test: ## Run tests to verify code functionality.
 test: gotestfmt
 	@echo "Running tests with coverage report..."
-	@set -euo pipefail
-	@$(GO) test -json -v -shuffle=on -timeout=5m -count=1 $(TESTFOLDER) -coverprofile=coverage.out -covermode=atomic 2>&1 | tee ./gotest-e2e.log | gotestfmt
+	@set -eu
+	@$(GO) test -json -shuffle=on -timeout=5m -count=1 $(TESTTAGS) $(TESTFOLDER) -coverprofile=coverage.out -covermode=atomic 2>&1 | tee ./gotest-e2e.log | gotestfmt
 
 .PHONY: fmt
 fmt: ## Ensure consistent code formatting.
