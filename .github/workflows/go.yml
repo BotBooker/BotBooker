@@ -1,5 +1,10 @@
 name: Run lint & Tests
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 on:
   push:
     branches:
@@ -21,7 +26,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Setup golangci-lint
-        uses: golangci/golangci-lint-action@v9
+        uses: golangci/golangci-lint-action@v9.2.0
         with:
           version: v2.6
           args: --verbose
