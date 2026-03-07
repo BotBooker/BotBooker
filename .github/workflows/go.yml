@@ -19,16 +19,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Setup go
         uses: actions/setup-go@v6
         with:
-          go-version-file: go.mod
+          # go-version-file: go.mod
+          go-version: "^1"
 
       - name: Setup golangci-lint
         uses: golangci/golangci-lint-action@v9.2.0
         with:
-          version: v2.6
+          version: v2.9
           args: --verbose
 
       - name: Bearer
@@ -41,7 +44,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        go: [1.25, 1.26]
+        go: ["1.25", "1.26"]
         include:
           - os: ubuntu-latest
             go-build: ~/.cache/go-build
