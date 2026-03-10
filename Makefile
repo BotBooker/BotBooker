@@ -75,3 +75,15 @@ gotestfmt: ## Install gotestfmt if not present
 	@if command -v goenv >/dev/null 2>&1; then \
 		goenv rehash; \
 	fi
+
+.PHONY: build
+build: ## Build for DEV
+	@rm -f ./api
+	go build -o ./api ./cmd/api
+
+.PHONY: clean-build
+clean-build: ## Build for PROD
+	go mod verify
+	go mod tidy
+	@rm -f ./api
+	CGO_ENABLED=0 go build -mod=readonly -tags netgo -trimpath -ldflags='-s -w -extldflags "-static"' -o ./api ./cmd/api
