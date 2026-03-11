@@ -9,9 +9,19 @@ on:
   push:
     branches:
       - main
+    paths:
+      - go.mod
+      - go.sum
+      - cmd/**
+      - internal/**
   pull_request:
     branches:
       - main
+    paths:
+      - go.mod
+      - go.sum
+      - cmd/**
+      - internal/**
 
 jobs:
   lint:
@@ -29,7 +39,7 @@ jobs:
           go-version: "^1"
 
       - name: Setup golangci-lint
-        uses: golangci/golangci-lint-action@v9.2.0
+        uses: golangci/golangci-lint-action@1e7e51e771db61008b38414a730f564565cf7c20 # v9.2.0
         with:
           version: v2.9
           args: --verbose
