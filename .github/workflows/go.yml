@@ -41,11 +41,10 @@ jobs:
       - name: Setup golangci-lint
         uses: golangci/golangci-lint-action@1e7e51e771db61008b38414a730f564565cf7c20 # v9.2.0
         with:
-          version: v2.9
           args: --verbose
 
       - name: Bearer
-        uses: bearer/bearer-action@v2
+        uses: bearer/bearer-action@828eeb928ce2f4a7ca5ed57fb8b59508cb8c79bc # v2
         with:
           diff: true
 
@@ -86,7 +85,7 @@ jobs:
             ${{ runner.os }}-go-
 
       - name: Setup PostgreSQL for Linux/macOS/Windows
-        uses: ikalnytskyi/action-setup-postgres@c4dda34aae1c821e3a771b68b73b13af3198a7ee
+        uses: ikalnytskyi/action-setup-postgres@c4dda34aae1c821e3a771b68b73b13af3198a7ee # v8
         with:
           postgresql-version: '14'
 
@@ -99,6 +98,6 @@ jobs:
           TESTTAGS='-failfast -shuffle=off' make test
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         with:
           flags: ${{ matrix.os }},go-${{ matrix.go }}
