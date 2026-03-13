@@ -53,29 +53,18 @@ jobs:
     needs: lint
     strategy:
       matrix:
-        # os: [ubuntu-latest, macos-latest]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
         go: ["1.25", "1.26"]
         include:
           - os: ubuntu-latest
             go-build: ~/.cache/go-build
-          # - os: macos-latest
-          #   go-build: ~/Library/Caches/go-build
+          - os: macos-latest
+            go-build: ~/Library/Caches/go-build
     name: ${{ matrix.os }} @ Go ${{ matrix.go }}
     runs-on: ${{ matrix.os }}
     env:
       GO111MODULE: on
       GOPROXY: https://proxy.golang.org
-    services:
-      postgres:
-        image: postgres:14
-        ports:
-          - 5432/tcp
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
     steps:
       - name: Set up Go ${{ matrix.go }}
         uses: actions/setup-go@v6
@@ -96,9 +85,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
+      - name: Setup PostgreSQL for Linux/macOS/Windows
+        uses: ikalnytskyi/action-setup-postgres@c4dda34aae1c821e3a771b68b73b13af3198a7ee
+        with:
+          postgresql-version: '14'
+
       - name: Run Tests
-        env:
-          PGPORT: ${{ job.services.postgres.ports[5432] }} # get randomly assigned published port
         run: |
           set -x
           sed -i.bak 's/go 1.25/go ${{ matrix.go }}/g' go.mod
