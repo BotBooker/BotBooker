@@ -87,9 +87,11 @@ jobs:
       - name: Setup PostgreSQL for Linux/macOS/Windows
         uses: ikalnytskyi/action-setup-postgres@c4dda34aae1c821e3a771b68b73b13af3198a7ee # v8
         with:
-          postgresql-version: '14'
+          postgresql-version: '16'
 
       - name: Run Tests
+        env:
+          PG: postgres://postgres:postgres@localhost/postgres?sslmode=disable
         run: |
           set -x
           sed -i.bak 's/go 1.25/go ${{ matrix.go }}/g' go.mod
