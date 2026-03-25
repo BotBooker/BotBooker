@@ -521,8 +521,8 @@ func TestPostgresTimeArray(t *testing.T) {
 
 func TestPostgresOnConflictDoUpdate(t *testing.T) {
 	type Model struct {
-		ID        int64 `bun:",pk,autoincrement"`
-		UpdatedAt time.Time
+		ID        int64     `bun:",pk,autoincrement"`
+		UpdatedAt time.Time `bun:"updated_at,nullzero"`
 	}
 
 	ctx := context.Background()
@@ -557,8 +557,8 @@ func TestPostgresOnConflictDoUpdate(t *testing.T) {
 
 func TestPostgresOnConflictDoUpdateIdentity(t *testing.T) {
 	type Model struct {
-		ID        int64 `bun:",pk,identity"`
-		UpdatedAt time.Time
+		ID        int64     `bun:",pk,identity"`
+		UpdatedAt time.Time `bun:"updated_at,nullzero"`
 	}
 
 	ctx := context.Background()
