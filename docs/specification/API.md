@@ -14,6 +14,7 @@
 
 - **Endpoint**: `POST /auth/register`
 - **Тело запроса**:
+
   ```json
   {
     "full_name": "Иван Иванов",
@@ -22,7 +23,9 @@
     "password": "secure_password"
   }
   ```
+
 - **Ответ (201 Created)**:
+
   ```json
   {
     "user_id": 123,
@@ -35,13 +38,16 @@
 
 - **Endpoint**: `POST /auth/login`
 - **Тело запроса**:
+
   ```json
   {
     "email": "user@example.com",
     "password": "secure_password"
   }
   ```
+
 - **Ответ (200 OK)**:
+
   ```json
   {
     "token": "eyJ...abc123",
@@ -54,11 +60,13 @@
 
 - **Endpoint**: `POST /auth/reset-password`
 - **Тело запроса**:
+
   ```json
   {
     "email": "user@example.com"
   }
   ```
+
 - **Ответ (200 OK)**: `{}` (письмо отправлено)
 
 ## 3. Управление объектами аренды
@@ -67,12 +75,13 @@
 
 - **Endpoint**: `GET /objects`
 - **Параметры запроса (query)**:
-  - `type` (например, `транспорт`, `недвижимость`)
-  - `subtype` (например, `автомобиль`, `квартира`)
-  - `location` (строка)
-  - `min_price`, `max_price` (число)
-  - `page`, `limit` (пагинация)
+  + `type` (например, `транспорт`, `недвижимость`)
+  + `subtype` (например, `автомобиль`, `квартира`)
+  + `location` (строка)
+  + `min_price`, `max_price` (число)
+  + `page`, `limit` (пагинация)
 - **Ответ (200 OK)**:
+
   ```json
   {
     "items": [
@@ -95,6 +104,7 @@
 
 - **Endpoint**: `GET /objects/{object_id}`
 - **Ответ (200 OK)**:
+
   ```json
   {
     "object_id": 456,
@@ -118,6 +128,7 @@
 
 - **Endpoint**: `POST /bookings`
 - **Тело запроса**:
+
   ```json
   {
     "object_id": 456,
@@ -128,7 +139,9 @@
     ]
   }
   ```
+
 - **Ответ (201 Created)**:
+
   ```json
   {
     "booking_id": 101,
@@ -138,8 +151,10 @@
   ```
 
 #### 4.2. Получение списка бронирований пользователя
+
 - **Endpoint**: `GET /bookings/my`
 - **Ответ (200 OK)**:
+
   ```json
   [
     {
@@ -155,8 +170,10 @@
   ```
 
 #### 4.3. Изменение бронирования
+
 - **Endpoint**: `PUT /bookings/{booking_id}`
 - **Тело запроса** (частичное обновление):
+
   ```json
   {
     "start_datetime": "2025-12-01T11:00:00Z",
@@ -165,25 +182,30 @@
     ]
   }
   ```
+
 - **Ответ (200 OK)**: обновлённый объект бронирования.
 
 #### 4.4. Отмена бронирования
+
 - **Endpoint**: `DELETE /bookings/{booking_id}`
 - **Ответ (204 No Content)**: `{}`
-
 
 ### 5. Платежи
 
 #### 5.1. Инициализация платежа
+
 - **Endpoint**: `POST /payments`
 - **Тело запроса**:
+
   ```json
   {
     "booking_id": 101,
     "payment_method": "карта"
   }
   ```
+
 - **Ответ (200 OK)**:
+
   ```json
   {
     "payment_id": 202,
@@ -193,8 +215,10 @@
   ```
 
 #### 5.2. Проверка статуса платежа
+
 - **Endpoint**: `GET /payments/{payment_id}`
 - **Ответ (200 OK)**:
+
   ```json
   {
     "payment_id": 202,
@@ -208,8 +232,10 @@
 ### 6. Дополнительные услуги
 
 #### 6.1. Получение списка услуг для объекта
+
 - **Endpoint**: `GET /objects/{object_id}/addons`
 - **Ответ (200 OK)**:
+
   ```json
   [
     {
@@ -224,23 +250,27 @@
 ### 7. Уведомления
 
 #### 7.1. Подписка на уведомления
+
 - **Endpoint**: `POST /notifications/subscribe`
 - **Тело запроса**:
+
   ```json
   {
     "channel": "telegram",
     "endpoint": "user_telegram_id_123"
   }
   ```
-- **Ответ (201 Created)**: `{}`
 
+- **Ответ (201 Created)**: `{}`
 
 ### 8. Веб‑панель операторов (административные методы)
 
 #### 8.1. Получение статистики
+
 - **Endpoint**: `GET /admin/analytics`
 - **Параметры**: `period` (`day`, `week`, `month`)
 - **Ответ (200 OK)**:
+
   ```json
   {
     "total_bookings": 150,
