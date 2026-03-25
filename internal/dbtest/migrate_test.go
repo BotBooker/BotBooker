@@ -363,7 +363,7 @@ func newAutoMigratorOrSkip(tb testing.TB, db *bun.DB, opts ...migrate.AutoMigrat
 }
 
 // inspectDbOrSkip returns a function to inspect the current state of the database.
-// The test will be *skipped* if the current dialect doesn't support database inpection
+// The test will be *skipped* if the current dialect doesn't support database inspection
 // and fail if the inspector cannot successfully retrieve database state.
 func inspectDbOrSkip(tb testing.TB, db *bun.DB, options ...sqlschema.InspectorOption) func(context.Context) sqlschema.BaseDatabase {
 	tb.Helper()
