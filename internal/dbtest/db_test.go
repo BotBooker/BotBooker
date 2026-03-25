@@ -15,7 +15,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	_ "github.com/jackc/pgx/v4/stdlib"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/require"
 
 	"github.com/uptrace/bun"
@@ -168,6 +168,7 @@ func TestDB(t *testing.T) {
 		{testScanAndCount},
 		{testEmbedModelValue},
 		{testEmbedModelPointer},
+		// {testEmbedTypeField},
 		{testJSONMarshaler},
 		{testNilDriverValue},
 		{testRunInTxAndSavepoint},
@@ -1471,6 +1472,10 @@ func testEmbedModelPointer(t *testing.T, db *bun.DB) {
 		Y *Embed `bun:"embed:y_"`
 	}
 
+	db.AddQueryHook(bundebug.NewQueryHook(
+		bundebug.WithVerbose(true),
+	))
+
 	ctx := context.Background()
 	mustResetModel(t, ctx, db, (*Model)(nil))
 
@@ -1507,6 +1512,7 @@ func testEmbedModelPointer(t *testing.T, db *bun.DB) {
 	err = db.NewSelect().Model(&m2).Scan(ctx)
 	require.NoError(t, err)
 	require.Equal(t, *m1, m2)
+	db.ResetQueryHooks()
 }
 
 func testEmbedTypeField(t *testing.T, db *bun.DB) {
@@ -1514,7 +1520,9 @@ func testEmbedTypeField(t *testing.T, db *bun.DB) {
 	type Model struct {
 		Embed
 	}
-
+	db.AddQueryHook(bundebug.NewQueryHook(
+		bundebug.WithVerbose(true),
+	))
 	ctx := context.Background()
 	mustResetModel(t, ctx, db, (*Model)(nil))
 
@@ -1522,6 +1530,7 @@ func testEmbedTypeField(t *testing.T, db *bun.DB) {
 		Embed: Embed("foo"),
 	}
 	_, err := db.NewInsert().Model(m1).Exec(ctx)
+	db.ResetQueryHooks()
 	require.NoError(t, err)
 
 	var m2 Model
