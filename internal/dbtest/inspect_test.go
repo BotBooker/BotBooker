@@ -34,10 +34,10 @@ type Article struct {
 type Office struct {
 	bun.BaseModel `bun:"table:admin.offices"`
 	Name          string `bun:"office_name,pk"`
-	TennantID     string `bun:"publisher_id"`
-	TennantName   string `bun:"publisher_name"`
+	TenantID      string `bun:"publisher_id"`
+	TenantName    string `bun:"publisher_name"`
 
-	Tennant *Publisher `bun:"rel:has-one,join:publisher_id=publisher_id,join:publisher_name=publisher_name"`
+	Tenant *Publisher `bun:"rel:has-one,join:publisher_id=publisher_id,join:publisher_name=publisher_name"`
 }
 
 type Publisher struct {
