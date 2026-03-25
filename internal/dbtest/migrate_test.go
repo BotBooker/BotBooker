@@ -331,7 +331,7 @@ func testRunMigrationUpErrorPreservesAppliedState(t *testing.T, db *bun.DB) {
 }
 
 // newAutoMigratorOrSkip creates an AutoMigrator configured to use test migratins/locks
-// tables and dedicated migrations directory. If an AutoMigrator cannob be created because
+// tables and dedicated migrations directory. If an AutoMigrator cannot be created because
 // the dialect doesn't support either schema inspections or migrations, the test will be *skipped*
 // with the corresponding error.
 // Additionally, it will create the migrations directory and if
