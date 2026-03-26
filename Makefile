@@ -1,11 +1,12 @@
+COVERAGE_OUT := $(shell test -f coverage.out && echo 1 || echo 0)
 GO ?= go
-GOFMT ?= gofmt "-s"
 GO_VERSION=$(shell $(GO) version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f2)
-PACKAGES ?= $(shell $(GO) list ./...)
-VETPACKAGES ?= $(shell $(GO) list ./... | grep -v /examples/)
 GOFILES := $(shell find . -name "*.go")
-TESTFOLDER := $(shell find . -name "*_test.go" -type f -exec dirname {} +)
+GOFMT ?= gofmt "-s"
+PACKAGES ?= $(shell $(GO) list ./...)
+TESTFOLDER := $(shell find . -path "./.git" -prune -o -name "*.go" -type f -exec dirname {} +|uniq)
 TESTTAGS ?= "-v"
+VETPACKAGES ?= $(shell $(GO) list ./... | grep -v /examples/)
 
 .DEFAULT_GOAL := help
 
@@ -20,8 +21,19 @@ help: ## Show this help message
 .PHONY: test
 test: ## Run tests to verify code functionality.
 test: gotestfmt
-	@echo "Running tests with coverage report..."
-	@set -eu;$(GO) test -json -shuffle=on -timeout=5m -count=1 $(TESTTAGS) $(TESTFOLDER) -coverprofile=coverage.out -covermode=atomic 2>&1 | tee ./gotest-e2e.log | gotestfmt
+	@echo "Running tests with coverage report...";
+	@set -eu;$(GO) mod tidy;$(GO) test -json -shuffle=on -timeout=5m -count=1 $(TESTTAGS) $(TESTFOLDER) -coverprofile=coverage.out -covermode=atomic 2>&1 | tee ./gotest-e2e.log | gotestfmt
+
+.PHONY: coverage
+coverage: ## Percentage of test coverage. If coverage <47.6%, output signal 1.
+ifeq ($(COVERAGE_OUT), 0)
+coverage: test
+else
+coverage:
+endif
+	@PERCENT=$$($(GO) tool cover -func=coverage.out | grep total | awk '{print $$3}'); \
+	echo "coverage at: $${PERCENT}"; \
+	echo $${PERCENT} | sed 's/%//' | xargs -I {} sh -c 'echo "{} < 47.6" | bc -l | grep -q 1 && exit 1 || exit 0'
 
 .PHONY: fmt
 fmt: ## Ensure consistent code formatting.
@@ -62,9 +74,12 @@ misspell-check: ## misspell (check only).
 .PHONY: tools
 tools: ## Install Go tools (including misspell).
 	@$(GO) install github.com/client9/misspell/cmd/misspell@latest
+	@$(GO) install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.11.4
+	@$(GO) install golang.org/x/tools/cmd/goimports@latest
+	@$(GO) install mvdan.cc/gofumpt@latest
 	@if command -v goenv >/dev/null 2>&1; then \
 		goenv rehash; \
-	fi
+	fi;
 
 .PHONY: gotestfmt
 gotestfmt: ## Install gotestfmt if not present
