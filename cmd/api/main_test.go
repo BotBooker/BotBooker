@@ -20,7 +20,6 @@ func setupRouter() *gin.Engine {
 	api := gin.Default()
 	api.ContextWithFallback = true
 	api.Use(otelgin.Middleware(applicationName))
-
 	api.GET("/ping", func(ctx *gin.Context) {
 		traceID, spanID, isSampled := observability.GetTraceInfo(ctx)
 		fmt.Printf("traceID: %v; spanID: %v; isSampled: %v\n", traceID, spanID, isSampled)
@@ -28,114 +27,78 @@ func setupRouter() *gin.Engine {
 			"message": "pong",
 		})
 	})
-
 	api.GET("/health", health.Handler)
-
 	return api
 }
 
 func TestPingEndpoint(t *testing.T) {
-	// Отключаем логи Gin в тестах
 	gin.SetMode(gin.TestMode)
-
-	// Создаём тестовый роутер
 	router := setupRouter()
-
 	ctx := context.Background()
-
-	// Создаём запрос
 	req, err := http.NewRequestWithContext(ctx, "GET", "/ping", nil)
 	if err != nil {
 		t.Fatal("не удалось создать запрос:", err)
 	}
 	w := httptest.NewRecorder()
-
-	// Выполняем запрос
 	router.ServeHTTP(w, req)
-
-	// Проверяем статус
 	if w.Code != http.StatusOK {
 		t.Errorf("Ожидаемый статус %d, получен %d", http.StatusOK, w.Code)
 	}
-
-	// Проверяем Content-Type
 	contentType := w.Header().Get("Content-Type")
 	if !strings.Contains(contentType, "application/json") {
 		t.Errorf("Content-Type должен быть application/json, получен %s", contentType)
 	}
-
-	// Декодируем ответ
 	var response map[string]string
 	err = json.NewDecoder(w.Body).Decode(&response)
 	if err != nil {
 		t.Fatalf("Не удалось декодировать JSON: %v", err)
 	}
-
-	// Проверяем поле "message"
 	if response["message"] != "pong" {
 		t.Errorf("Поле 'message' должно быть 'pong', получено %s", response["message"])
 	}
 }
 
 func TestHealthEndpoint(t *testing.T) {
-	// Отключаем логи Gin в тестах
 	gin.SetMode(gin.TestMode)
-	// Создаём тестовый роутер
 	router := setupRouter()
-
 	ctx := context.Background()
-
 	req, err := http.NewRequestWithContext(ctx, "GET", "/health", nil)
 	if err != nil {
 		t.Fatal("не удалось создать запрос:", err)
 	}
 	w := httptest.NewRecorder()
-
 	router.ServeHTTP(w, req)
-
 	if w.Code != http.StatusOK {
 		t.Errorf("Ожидаемый статус %d, получен %d", http.StatusOK, w.Code)
 	}
-
 	contentType := w.Header().Get("Content-Type")
 	if !strings.Contains(contentType, "application/json") {
 		t.Errorf("Content-Type должен быть application/json, получен %s", contentType)
 	}
-
-	// Проверяем, что ответ не пустой
 	if w.Body.Len() == 0 {
 		t.Error("Ответ /health пуст")
 	}
 }
 
 func TestPingLogsTraceInfo(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
 	var logOutput strings.Builder
+	gin.SetMode(gin.TestMode)
 	observability.LogHook = func(format string, a ...any) {
 		logOutput.WriteString(fmt.Sprintf(format, a...))
 	}
-
-	router := setupRouter() // ваш существующий setupRouter
-
+	router := setupRouter()
 	ctx := context.Background()
-
-	// Создаём запрос
 	req, err := http.NewRequestWithContext(ctx, "GET", "/ping", nil)
 	if err != nil {
 		t.Fatal("не удалось создать запрос:", err)
 	}
 	w := httptest.NewRecorder()
-
 	router.ServeHTTP(w, req)
-
 	if !strings.Contains(logOutput.String(), "traceID:") {
 		t.Error("В логах отсутствует traceID")
 	}
 	if !strings.Contains(logOutput.String(), "spanID:") {
 		t.Error("В логах отсутствует spanID")
 	}
-
-	// Сброс хука после теста
 	observability.LogHook = nil
 }
